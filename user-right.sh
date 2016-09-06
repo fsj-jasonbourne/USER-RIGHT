@@ -27,7 +27,7 @@ function user_add()
         userdate=`date +%Y-%m-%d-%H:%M:%S`
         useradd ${user_name}${i} 
         echo "add ${user_name}${i}-----${userdate}-----${i}" >> /home/fsj/adduser.dat
-        sleep 3
+        sleep 30
     }
     done
 }
@@ -39,9 +39,8 @@ function user_del()
     {
         userdate=`date +%Y-%m-%d-%H:%M:%S`
         userdel ${user_name}${i} 
-        echo "add ${user_name}${i}-----${userdate}-----${i}" >> /home/fsj/deluser.dat
-        sleep 3
-        sleep 3
+        echo "del ${user_name}${i}-----${userdate}-----${i}" >> /home/fsj/deluser.dat
+        sleep 30
     }
     done
 }
@@ -60,12 +59,28 @@ function group_del()
 
 function user_state_change()
 {
-   usermod -L  userdel ${user_name}
+    for (( i=1;i<100;i++ ))
+    do 
+    {
+        userdate=`date +%Y-%m-%d-%H:%M:%S`
+        usermod -L  userdel ${user_name}
+        echo "lock ${user_name}${i}-----${userdate}-----${i}" >> /home/fsj/deluser.dat
+	sleep 3
+        usermod -U  userdel ${user_name}
+        echo "unlock ${user_name}${i}-----${userdate}-----${i}" >> /home/fsj/deluser.dat
+        sleep 30
+    }
+    done
+
 }
 
 function Main()
 {
+    #增加用户/用户组
     user_add
+    #改变用户状态
+    user_state_change
+    #删除用户/用户组
     user_del
 }
 
